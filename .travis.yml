@@ -6,4 +6,4 @@ install:
   - pip install -r requirements.txt
 
 script:
-  - pylint export_worker_service run.py
+  - pylint config create_file send_email serializers views create_app.py db.py delete_files.py setup.py
