@@ -7,6 +7,7 @@ from models.answers import Answer
 from files import FILE_MAKERS, file_name
 from db import SESSION
 from serializers.answer_schema import ANSWERS_SCHEMA
+from sqlalchemy.exc import OperationalError
 
 CONNECTION = pika.BlockingConnection(
     pika.ConnectionParameters(host='localhost'))
@@ -48,11 +49,14 @@ def get_answers_for_form(form, groups):
     with field and reply for this field.
     """
     answers = []
-    if groups:
-        for group in groups:
-            answers += SESSION.query(Answer).filter_by(form_id=form, group_id=group).all()
-    else:
-        answers = SESSION.query(Answer).filter_by(form_id=form).all()
+    try:
+        if groups:
+            for group in groups:
+                answers += SESSION.query(Answer).filter_by(form_id=form, group_id=group).all()
+        else:
+            answers = SESSION.query(Answer).filter_by(form_id=form).all()
+    except OperationalError:
+        message_for_queue("db error", "answer_to_export")
     list_of_answers = ANSWERS_SCHEMA.dump(answers).data
     field_title = get_field_title_by_id(list_of_answers)
     users_answers = {answer.user_id: {} for answer in answers}
