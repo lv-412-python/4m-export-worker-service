@@ -1,12 +1,4 @@
-"""Create URL"""
-import urllib.parse
-
-URL = "http://localhost:5000/download/"
-
-def create_url(data):
-    """Generate url"""
-    return URL + urllib.parse.urlencode(data)
-
+"""Templates for email messages."""
 
 EMAIL_TEMPLATE = """
     <!DOCTYPE html>

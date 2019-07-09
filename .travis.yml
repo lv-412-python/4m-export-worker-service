@@ -6,4 +6,4 @@ install:
   - pip install -r requirements.txt
 
 script:
-  - pylint config create_file send_email serializers views create_app.py db.py delete_files.py setup.py
+  - pylint delete_files.py workers serializers create_messages.py rabbitmq_setup.py
