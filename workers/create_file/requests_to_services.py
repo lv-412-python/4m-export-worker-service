@@ -12,7 +12,7 @@ def request_to_answers_service(url, input_dict):
     return requests.get(url, params=input_dict)
 
 
-def request_to_groups_service(url, input_dict):
+def request_to_group_service(url, input_dict):
     """
     Sends request to answers service.
     :param url: groups service URL

@@ -44,5 +44,4 @@ class Auth:
             flow.user_agent = self.application_name
             if FLAGS:
                 credentials = tools.run_flow(flow, store, FLAGS)
-            print('Storing credentials to ' + credential_path)
         return credentials

@@ -1,16 +1,26 @@
 """Creates csv, pdf, xls files"""
 from ast import literal_eval
+from export_worker_service.create_messages import (
+    create_dict_message,
+    message_for_queue
+)
 
-from export_worker_service.create_messages import create_dict_message, message_for_queue
 from export_worker_service.rabbitmq_setup import CHANNEL
-from files import (xls_file, csv_file, pdf_file, create_file_name)
+from files import (
+    xls_file,
+    csv_file,
+    pdf_file,
+    create_file_name
+)
 from get_titles import get_field_title_by_id
-from requests_to_services import request_to_answers_service
-
-import delete_files # pylint: disable=unused-import
+from requests_to_services import (
+    request_to_answers_service,
+    # request_to_group_service
+)
 
 from serializers.job_schema import JobSchema
 from workers.config.base_config import Config
+
 
 FILE_MAKERS = {
     'xls': xls_file,
@@ -49,6 +59,7 @@ def create_file(channel, method, properties, job_data):
     :param
     :return: str: Message with status to export service
     """
+
     job_data = job_data.decode('utf-8')
     job_dict = literal_eval(job_data)
     job_schema = JobSchema()
@@ -58,13 +69,14 @@ def create_file(channel, method, properties, job_data):
         message_for_queue(message, 'answer_to_export')
         return
     job_dict = job_dict.data
+    # groups_title = requests.get(Config.GROUP_SERVICE_URL, params=job_dict)
     answers = request_to_answers_service(Config.ANSWERS_SERVICE_URL, job_dict)
     answers = get_answers_for_form(answers)
     if not answers:
         message = create_dict_message(job_dict, "Answers don't exist")
         message_for_queue(message, 'answer_to_export')
         return
-    # groups_title = request_to_group_service(Config.GROUP_SERVICE_URL, request_data)
+    # groups_title = request_to_group_service(Config.GROUP_SERVICE_URL, job_dict)
     # form_title = request_to_form_service(Config.FORM_SERVICE_URL, job_dict)
     # name = file_name(groups_title, form_title)
     file_name = create_file_name(job_dict)
@@ -76,7 +88,6 @@ def create_file(channel, method, properties, job_data):
         return
     job_dict.update({'file_name': file_name})
     message_for_queue(job_dict, 'upload_on_google_drive')
-
 
 CHANNEL.basic_consume(queue='export', on_message_callback=create_file, auto_ack=True)
 CHANNEL.start_consuming()
