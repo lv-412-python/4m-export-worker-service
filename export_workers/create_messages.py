@@ -1,7 +1,7 @@
 """Functions to create messages"""
 import json
 
-from export_worker_service.rabbitmq_setup import CHANNEL
+from export_workers.rabbitmq_setup import CHANNEL
 
 
 def create_dict_message(job_dict, message):
@@ -12,7 +12,7 @@ def create_dict_message(job_dict, message):
     :return:
     """
     result = {
-        'id': job_dict['id'],
+        'task_id': job_dict['task_id'],
         'message': message
     }
     return result

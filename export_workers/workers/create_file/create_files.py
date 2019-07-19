@@ -1,11 +1,11 @@
 """Creates csv, pdf, xls files"""
 from ast import literal_eval
-from export_worker_service.create_messages import (
+from export_workers.create_messages import (
     create_dict_message,
     message_for_queue
 )
 
-from export_worker_service.rabbitmq_setup import CHANNEL
+from export_workers.rabbitmq_setup import CHANNEL
 from files import (
     xls_file,
     csv_file,
@@ -19,7 +19,7 @@ from requests_to_services import (
 )
 
 from serializers.job_schema import JobSchema
-from workers.config.base_config import Config
+from export_workers.workers.config.base_config import Config
 
 
 FILE_MAKERS = {
@@ -59,7 +59,7 @@ def create_file(channel, method, properties, job_data):
     :param
     :return: str: Message with status to export service
     """
-
+    print(job_data)
     job_data = job_data.decode('utf-8')
     job_dict = literal_eval(job_data)
     job_schema = JobSchema()
@@ -89,5 +89,6 @@ def create_file(channel, method, properties, job_data):
     job_dict.update({'file_name': file_name})
     message_for_queue(job_dict, 'upload_on_google_drive')
 
+print(123123123123123123131231231231313123123123123131231231231232131231)
 CHANNEL.basic_consume(queue='export', on_message_callback=create_file, auto_ack=True)
 CHANNEL.start_consuming()

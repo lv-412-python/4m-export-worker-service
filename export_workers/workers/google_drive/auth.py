@@ -14,6 +14,7 @@ try:
 except ImportError:
     FLAGS = None
 
+CREDENTIALS_PATH = os.environ.get('PATH_TO_CREDENTIALS')
 
 class Auth:
     # pylint: disable=too-few-public-methods
@@ -30,8 +31,7 @@ class Auth:
         Returns:
             Credentials, the obtained credential.
         """
-        cwd_dir = os.getcwd()
-        credential_dir = os.path.join(cwd_dir, '.credentials')
+        credential_dir = os.path.join(CREDENTIALS_PATH, '.credentials')
         if not os.path.exists(credential_dir):
             os.makedirs(credential_dir)
         credential_path = os.path.join(credential_dir,

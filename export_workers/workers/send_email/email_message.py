@@ -3,7 +3,7 @@ import os
 import smtplib
 from email.mime.text import MIMEText
 
-from export_worker_service.create_messages import message_for_queue, create_dict_message
+from export_workers.create_messages import message_for_queue, create_dict_message
 from message_templates import EMAIL_TEMPLATE
 
 EMAIL_ADDRESS = os.environ.get('WORKER_EMAIL_ADDRESS')

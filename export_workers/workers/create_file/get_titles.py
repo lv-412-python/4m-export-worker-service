@@ -1,7 +1,7 @@
 """Get form, groups, fields titles from services"""
 import requests
 
-from workers.config.base_config import Config
+from export_workers.workers.config.base_config import Config
 
 
 def get_field_title_by_id(result):

@@ -4,7 +4,7 @@ from marshmallow import Schema, fields, ValidationError, validates
 
 class JobSchema(Schema):
     """Schema for job dict."""
-    id = fields.Integer(required=True)
+    task_id = fields.Integer(required=True)
     form_id = fields.Integer(required=True)
     groups = fields.List(fields.Integer(), required=True)
     export_format = fields.String(required=True)

@@ -30,24 +30,18 @@ def xls_file(answers, name):
     file_name = PATH_TO_EXPORT_FILES + '/{0}.xls'.format(name)
     try:
         workbook = xlsxwriter.Workbook(file_name)
-
         worksheet = workbook.add_worksheet()
-
         row = 0
         col = 0
-
         user_id = random.choice(list(answers))
         field_titles = answers[user_id].keys()
-
         for title in field_titles:
             worksheet.write(0, col, title)
             col += 1
-
         for _, user_id in enumerate(answers):
             row += 1
             for col, value in enumerate(answers[user_id]):
                 worksheet.write(row, col, answers[user_id][value])
-
         workbook.close()
         status = True
     except TypeError as error:
