@@ -39,13 +39,12 @@ def get_answers_for_form(answers):
     with field and reply for this field.
     """
     answers_list = literal_eval(answers.text)
+    print(answers_list)
     users_answers = {answer['user_id']: {} for answer in answers_list}
     field_title = get_field_title_by_id(answers.json())
     for answer in answers_list:
         title = field_title[str(answer['field_id'])]
         users_answers[answer['user_id']][title] = answer['reply']
-    if not users_answers:
-        users_answers = {}
     return users_answers
 
 
@@ -69,13 +68,12 @@ def create_file(channel, method, properties, job_data):
         message_for_queue(message, 'answer_to_export')
         return
     job_dict = job_dict.data
-    # groups_title = requests.get(Config.GROUP_SERVICE_URL, params=job_dict)
     answers = request_to_answers_service(Config.ANSWERS_SERVICE_URL, job_dict)
-    answers = get_answers_for_form(answers)
     if not answers:
-        message = create_dict_message(job_dict, "Answers don't exist")
-        message_for_queue(message, 'answer_to_export')
+        message = create_dict_message(job_dict, "Answers does not exist")
+        message_for_queue(message, "answer_to_export")
         return
+    answers = get_answers_for_form(answers)
     # groups_title = request_to_group_service(Config.GROUP_SERVICE_URL, job_dict)
     # form_title = request_to_form_service(Config.FORM_SERVICE_URL, job_dict)
     # name = file_name(groups_title, form_title)

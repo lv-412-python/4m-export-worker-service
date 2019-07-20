@@ -8,7 +8,7 @@ from fpdf import FPDF
 
 PATH_TO_EXPORT_FILES = os.environ.get('PATH_TO_EXPORT_FILES')
 
-def create_file_name(dic):
+def create_file_name(form_title, groups=None):
     """
     Create unique filename.
     :param dic: Dictionary has particular form_id and groups.
@@ -16,7 +16,10 @@ def create_file_name(dic):
     for file.
     :return: str : File name.
     """
-    name = f"Answers_for_form:{dic['form_id']}_groups:{dic['groups']}"
+    if groups:
+        name = "Answers_for_form:{}_groups:{}".format(form_title, groups)
+    else:
+        name = "Answers_for_form:{}".format(form_title)
     return name
 
 
