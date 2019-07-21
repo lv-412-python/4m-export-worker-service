@@ -25,11 +25,3 @@ class JobSchema(Schema):
         if export_format not in formats:
             raise ValidationError("Incorrect format!")
 
-class FormResponseSchema(Schema):
-    """Schema for response from form service"""
-    description = fields.String(required=True)
-    title = fields.String(required=True)
-    fields = fields.List(fields.Integer(), required=True)
-    form_id = fields.Integer(required=True)
-    owner = fields.String(required=True)
-

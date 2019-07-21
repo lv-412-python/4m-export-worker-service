@@ -2,11 +2,11 @@
 import os
 from ast import literal_eval
 
-from drive import DRIVE_SERVICE
+from drive import DRIVE_SERVICE, GOOGLE_INST
 from export_workers.create_messages import message_for_queue, create_dict_message
 from export_workers.rabbitmq_setup import CHANNEL
-from set_permissions import insert_permission
-from upload_file import upload_file_to_drive
+# from set_permissions import insert_permission
+# from upload_file import upload_file_to_drive
 
 PATH_TO_EXPORT_FILES = os.environ.get('PATH_TO_EXPORT_FILES') + '/'
 print(123123123123123)
@@ -32,8 +32,8 @@ def upload_to_google_drive(channel, method, properties, job_data):
     if file_name in files:
         file_path = PATH_TO_EXPORT_FILES + file_name
         file_format = 'text/{}'.format(job_data['export_format'])
-        url_for_downloading, file_id = upload_file_to_drive(file_name, file_path, file_format)
-        insert_permission(DRIVE_SERVICE, file_id, job_data['email'], 'user', 'writer')
+        url_for_downloading, file_id = GOOGLE_INST.upload_file_to_drive(file_name, file_path, file_format)
+        GOOGLE_INST.insert_permissions(DRIVE_SERVICE, file_id, job_data['email'], 'user', 'writer')
         job_data.update({'url': url_for_downloading})
         message_for_queue(job_data, 'send_email')
     else:

@@ -1,5 +1,7 @@
 """Auth class"""
 from __future__ import print_function
+from apiclient import errors
+from apiclient.http import MediaFileUpload
 
 import os
 
@@ -16,7 +18,7 @@ except ImportError:
 
 CREDENTIALS_PATH = os.environ.get('PATH_TO_CREDENTIALS')
 
-class Auth:
+class GoogleDriveInterface:
     # pylint: disable=too-few-public-methods
     """Auth class."""
     def __init__(self, scopes, client_secret_file, application_name):
@@ -45,3 +47,49 @@ class Auth:
             if FLAGS:
                 credentials = tools.run_flow(flow, store, FLAGS)
         return credentials
+
+    def insert_permission(self, service, file_id, value, perm_type, role):
+        """Insert a new permission.
+        Args:
+          service: Drive API service instance.
+          file_id: ID of the file to insert permission for.
+          value: User or group e-mail address, domain name or None for 'default'
+                 type.
+          perm_type: The value 'user', 'group', 'domain' or 'default'.
+          role: The value 'owner', 'writer' or 'reader'.
+        Returns:
+          The inserted permission if successful, None otherwise.
+        """
+        new_permission = {
+            'emailAddress': value,
+            'type': perm_type,
+            'role': role,
+            'transferOwnership': True
+        }
+        response = None
+        try:
+            response = service.permissions().create(
+                fileId=file_id, body=new_permission).execute()
+        except errors.HttpError as error:
+            print('An error occurred: %s' % error)
+        return response
+
+    def upload_file_to_drive(self, drive_service, filename, filepath, mimetype):
+        # pylint: disable=no-member
+        """
+        Uploads file to google drive
+        :param filename: str: name of the file.
+        :param filepath: str: path to file.
+        :param mimetype: type of the file.
+        :return: list: list of 2 elements. 1 - link for downloading
+        2 - id file on google drive.
+        """
+        file_metadata = {'name': filename}
+        media = MediaFileUpload(filepath,
+                                mimetype=mimetype)
+        file = drive_service.files().create(body=file_metadata,
+                                            media_body=media,
+                                            fields='id, webContentLink').execute()
+        link_for_downloading = file.get('webContentLink')
+        file_id = file.get('id')
+        return [link_for_downloading, file_id]

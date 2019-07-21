@@ -12,11 +12,8 @@ from files import (
     pdf_file,
     create_file_name
 )
-from get_titles import get_field_title_by_id
-from requests_to_services import (
-    request_to_answers_service,
-    # request_to_group_service
-)
+from get_titles import GetTitles
+from requests_to_services import SendRequest
 
 from serializers.job_schema import JobSchema
 from export_workers.workers.config.base_config import Config
@@ -38,12 +35,13 @@ def get_answers_for_form(answers):
     Keys are user, values are dictionaries
     with field and reply for this field.
     """
-    answers_list = literal_eval(answers.text)
-    print(answers_list)
+    answers_list = answers.json()
     users_answers = {answer['user_id']: {} for answer in answers_list}
-    field_title = get_field_title_by_id(answers.json())
+    get_titles = GetTitles()
+    field_title = get_titles.get_field_title(answers_list)
+    print(field_title)
     for answer in answers_list:
-        title = field_title[str(answer['field_id'])]
+        title = field_title[answer['field_id']]
         users_answers[answer['user_id']][title] = answer['reply']
     return users_answers
 
@@ -68,18 +66,20 @@ def create_file(channel, method, properties, job_data):
         message_for_queue(message, 'answer_to_export')
         return
     job_dict = job_dict.data
-    answers = request_to_answers_service(Config.ANSWERS_SERVICE_URL, job_dict)
+    sender = SendRequest()
+    answers = sender.request_to_services(Config.ANSWERS_SERVICE_URL, job_dict)
+    answers = get_answers_for_form(answers)
     if not answers:
         message = create_dict_message(job_dict, "Answers does not exist")
         message_for_queue(message, "answer_to_export")
         return
-    answers = get_answers_for_form(answers)
     # groups_title = request_to_group_service(Config.GROUP_SERVICE_URL, job_dict)
     # form_title = request_to_form_service(Config.FORM_SERVICE_URL, job_dict)
     # name = file_name(groups_title, form_title)
     file_name = create_file_name(job_dict)
     export_format = job_dict['export_format']
     status = FILE_MAKERS[export_format](answers, file_name)
+    print(status)
     if not status:
         message = create_dict_message(job_dict, 'Something went wrong! File is not created!')
         message_for_queue(message, "answer_to_export")

@@ -3,14 +3,14 @@ import requests
 
 class SendRequest():
 
-    def request_to_services(self, url, input_dict):
+    def request_to_services(self, url, job_dict):
         """
         Send request to service.
         :param url: str: answer service URL
         :param input_dict: dict: parameters to query
         :return: answers for form.
         """
-        return requests.get(url, params=input_dict)
+        return requests.get(url, params=job_dict)
 
     def request_to_form_service(self, url, job_dict):
         """
