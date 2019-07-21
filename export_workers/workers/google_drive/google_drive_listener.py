@@ -21,6 +21,7 @@ def upload_to_google_drive(channel, method, properties, job_data):
     :param job_data: dict:
     :return:
     """
+    print(11111)
     try:
         job_data = job_data.decode('utf-8')
         job_data = literal_eval(job_data)
@@ -32,8 +33,8 @@ def upload_to_google_drive(channel, method, properties, job_data):
     if file_name in files:
         file_path = PATH_TO_EXPORT_FILES + file_name
         file_format = 'text/{}'.format(job_data['export_format'])
-        url_for_downloading, file_id = GOOGLE_INST.upload_file_to_drive(file_name, file_path, file_format)
-        GOOGLE_INST.insert_permissions(DRIVE_SERVICE, file_id, job_data['email'], 'user', 'writer')
+        url_for_downloading, file_id = GOOGLE_INST.upload_file_to_drive(DRIVE_SERVICE, file_name, file_path, file_format)
+        GOOGLE_INST.insert_permission(DRIVE_SERVICE, file_id, job_data['email'], 'user', 'writer')
         job_data.update({'url': url_for_downloading})
         message_for_queue(job_data, 'send_email')
     else:
