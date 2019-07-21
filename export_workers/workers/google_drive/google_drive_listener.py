@@ -2,11 +2,9 @@
 import os
 from ast import literal_eval
 
-from drive import DRIVE_SERVICE, GOOGLE_INST
+from create_drive import DRIVE_SERVICE, GOOGLE_INST
 from export_workers.create_messages import message_for_queue, create_dict_message
 from export_workers.rabbitmq_setup import CHANNEL
-# from set_permissions import insert_permission
-# from upload_file import upload_file_to_drive
 
 PATH_TO_EXPORT_FILES = os.environ.get('PATH_TO_EXPORT_FILES') + '/'
 print(123123123123123)

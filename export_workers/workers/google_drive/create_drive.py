@@ -3,7 +3,7 @@ from __future__ import print_function
 
 import httplib2
 from apiclient import discovery
-from auth import GoogleDriveInterface
+from google_drive_interface import GoogleDriveInterface
 
 SCOPES = 'https://www.googleapis.com/auth/drive'
 CLIENT_SECRET_FILE = 'credentials.json'
