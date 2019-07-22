@@ -25,7 +25,7 @@ FILE_MAKERS = {
     'pdf': pdf_file
 }
 
-
+print(1111111111)
 def get_answers_for_form(answers):
     """
     Gets users responses from the database
@@ -73,10 +73,11 @@ def create_file(channel, method, properties, job_data):
         message = create_dict_message(job_dict, "Answers does not exist")
         message_for_queue(message, "answer_to_export")
         return
-    # groups_title = request_to_group_service(Config.GROUP_SERVICE_URL, job_dict)
-    # form_title = request_to_form_service(Config.FORM_SERVICE_URL, job_dict)
-    # name = file_name(groups_title, form_title)
-    file_name = create_file_name(job_dict)
+    get_title = GetTitles()
+    group_response = sender.request_to_services(Config.GROUP_SERVICE_URL, job_dict)
+    groups_title = get_title.get_group_titles(group_response)
+    # form_title = get_title.get_form_title(job_dict)
+    file_name = create_file_name('form', groups_title)
     export_format = job_dict['export_format']
     status = FILE_MAKERS[export_format](answers, file_name)
     print(status)
@@ -90,3 +91,8 @@ def create_file(channel, method, properties, job_data):
 print(123123123123123123131231231231313123123123123131231231231232131231)
 CHANNEL.basic_consume(queue='export', on_message_callback=create_file, auto_ack=True)
 CHANNEL.start_consuming()
+
+# import logging
+# logger = logging.getLogger()
+# while True:
+#     logger.error("vse pogano1")

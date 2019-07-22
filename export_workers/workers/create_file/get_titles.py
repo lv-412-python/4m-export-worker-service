@@ -5,6 +5,7 @@ from requests_to_services import SendRequest
 from export_workers.workers.create_file.serializers.form_schema import FormResponseSchema
 from export_workers.workers.config.base_config import Config
 
+SENDER = SendRequest()
 
 class GetTitles():
     def get_field_title(self, result):
@@ -20,7 +21,7 @@ class GetTitles():
             fields_id.add(int(field))
         # request titles based on needed fields_id
         fields_params = {'field_id': list(fields_id)}
-        fields_request = requests.get(Config.FIELD_SERVICE_URL, params=fields_params)
+        fields_request = SENDER.request_to_services(Config.FIELD_SERVICE_URL, fields_params)
         r_dict = fields_request.json()
         result_dict = {}
         for dict_title in r_dict:
@@ -31,9 +32,18 @@ class GetTitles():
         response = SendRequest.request_to_form_service(Config.FORM_SERVICE_URL, job_dict)
         response_schema = FormResponseSchema()
         response = response_schema.load(response)
+        print(response)
         if response.errors:
             result = ""
         else:
             result = response.data['title']
         return result
 
+    def get_group_titles(self, data):
+        # response = SendRequest.request_to_services(Config.GROUP_SERVICE_URL, job_dict)
+        # resp_dict = response.json()
+        data = data.json()
+        group_titles = []
+        for group in data:
+            group_titles.append(group['title'])
+        return group_titles

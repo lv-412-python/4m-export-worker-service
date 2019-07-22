@@ -43,3 +43,8 @@ def upload_to_google_drive(channel, method, properties, job_data):
 CHANNEL.basic_consume(queue='upload_on_google_drive',
                       on_message_callback=upload_to_google_drive, auto_ack=True)
 CHANNEL.start_consuming()
+
+# import logging
+# logger = logging.getLogger()
+# while True:
+#     logger.error("vse pogano")

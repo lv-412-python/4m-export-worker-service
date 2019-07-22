@@ -21,3 +21,4 @@ class SendRequest():
         """
         url = url + '/{}'.format(job_dict['form_id'])
         print(requests.get(url))
+
