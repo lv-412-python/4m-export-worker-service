@@ -19,7 +19,7 @@ from export_workers.create_messages import (
 )
 from export_workers.rabbitmq_setup import CHANNEL
 from export_workers.workers.config.base_config import Config
-import export_workers.delete_files
+# import export_workers.delete_files
 
 fileConfig('logging.config')
 
