@@ -1,11 +1,8 @@
 """Creates csv, pdf, xls files"""
+import logging
 from ast import literal_eval
-from export_workers.create_messages import (
-    create_dict_message,
-    message_for_queue
-)
+from logging.config import fileConfig
 
-from export_workers.rabbitmq_setup import CHANNEL
 from files import (
     xls_file,
     csv_file,
@@ -14,15 +11,17 @@ from files import (
 )
 from get_titles import GetTitles
 from requests_to_services import SendRequest
-
 from serializers.job_schema import JobSchema
+
+from export_workers.create_messages import (
+    create_dict_message,
+    message_for_queue
+)
+from export_workers.rabbitmq_setup import CHANNEL
 from export_workers.workers.config.base_config import Config
 import export_workers.delete_files
-from logging.config import fileConfig
-import logging
 
 fileConfig('logging.config')
-
 
 FILE_MAKERS = {
     'xls': xls_file,
@@ -34,7 +33,7 @@ GET_TITLE = GetTitles()
 SENDER = SendRequest()
 JOB_SCHEMA = JobSchema()
 
-print(1111111111)
+
 def get_answers_for_form(answers):
     """
     Gets users responses from the database
@@ -58,7 +57,6 @@ def get_answers_for_form(answers):
 
 
 def create_file(channel, method, properties, job_data):
-    # pylint: disable=unused-argument
     """
     Callback starts executing when appears task for processing in queue
     :param method: method
@@ -67,7 +65,6 @@ def create_file(channel, method, properties, job_data):
     :param
     :return: str: Message with status to export service
     """
-    print(job_data)
     job_data = job_data.decode('utf-8')
     job_dict = literal_eval(job_data)
     job_dict = JOB_SCHEMA.load(job_dict)
@@ -90,12 +87,10 @@ def create_file(channel, method, properties, job_data):
     else:
         groups_title = ''
     forms_response = SENDER.request_to_form_service(Config.FORM_SERVICE_URL, job_dict)
-    print(type(forms_response))
     form_title = GET_TITLE.get_form_title(forms_response)
     file_name = create_file_name(form_title, groups_title)
     export_format = job_dict['export_format']
     status = FILE_MAKERS[export_format](answers, file_name)
-    print(status)
     if not status:
         message = create_dict_message(job_dict, 'Something went wrong! File is not created!')
         message_for_queue(message, "answer_to_export")
@@ -104,6 +99,7 @@ def create_file(channel, method, properties, job_data):
     job_dict.update({'file_name': file_name})
     message_for_queue(job_dict, 'upload_on_google_drive')
 
-print(123123123123123123131231231231313123123123123131231231231232131231)
+print("create_file worker is running!")
+
 CHANNEL.basic_consume(queue='export', on_message_callback=create_file, auto_ack=True)
 CHANNEL.start_consuming()

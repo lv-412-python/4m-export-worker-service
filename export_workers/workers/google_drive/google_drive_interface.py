@@ -1,14 +1,14 @@
 """Auth class"""
 from __future__ import print_function
-from apiclient import errors
-from apiclient.http import MediaFileUpload
 
+import logging
 import os
 
+from apiclient import errors
+from apiclient.http import MediaFileUpload
 from oauth2client import client
 from oauth2client import tools
 from oauth2client.file import Storage
-import logging
 
 try:
     import argparse
@@ -20,12 +20,12 @@ except ImportError:
 CREDENTIALS_PATH = os.environ.get('PATH_TO_CREDENTIALS')
 
 class GoogleDriveInterface:
-    # pylint: disable=too-few-public-methods
     """Auth class."""
     def __init__(self, scopes, client_secret_file, application_name):
         self.scopes = scopes
         self.client_secret_file = client_secret_file
         self.application_name = application_name
+
 
     def get_credentials(self):
         """Gets valid user credentials from storage.
@@ -48,6 +48,7 @@ class GoogleDriveInterface:
             if FLAGS:
                 credentials = tools.run_flow(flow, store, FLAGS)
         return credentials
+
 
     def insert_permission(self, service, file_id, value, perm_type, role):
         """Insert a new permission.
@@ -75,10 +76,11 @@ class GoogleDriveInterface:
             logging.error("permissions wasn't inserted")
         return response
 
-    def upload_file_to_drive(self, drive_service, filename, filepath, mimetype):
-        # pylint: disable=no-member
+
+    def file_to_drive(self, drive_service, filename, filepath, mimetype):
         """
         Uploads file to google drive
+        :param drive_service: drive to upload files
         :param filename: str: name of the file.
         :param filepath: str: path to file.
         :param mimetype: type of the file.

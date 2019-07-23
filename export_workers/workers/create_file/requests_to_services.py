@@ -1,10 +1,12 @@
 """Send requests to services"""
-import requests
-import urllib.error
 import logging
+import urllib.error
+
+import requests
+
 
 class SendRequest():
-
+    """Send requests to services"""
     def request_to_services(self, url, job_dict):
         """
         Send request to service.

@@ -1,7 +1,6 @@
 """Config file."""
 
 class Config:
-    # pylint: disable=too-few-public-methods
     """Config class"""
     ANSWERS_SERVICE_URL = "http://localhost:5000/answers"
     GROUP_SERVICE_URL = "http://localhost:5768/group"

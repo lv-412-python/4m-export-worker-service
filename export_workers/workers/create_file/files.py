@@ -1,11 +1,12 @@
 """Functions to creating csv, pdf, xls files"""
 import csv
+import logging
 import os
 import random
 
 import xlsxwriter
 from fpdf import FPDF
-import logging
+
 PATH_TO_EXPORT_FILES = os.environ.get('PATH_TO_EXPORT_FILES')
 
 def create_file_name(form_title, groups=None):

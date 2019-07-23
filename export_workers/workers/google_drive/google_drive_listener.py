@@ -1,17 +1,17 @@
 """Listen queue and upload files to google drive."""
+import logging
 import os
 from ast import literal_eval
 
 from create_drive import DRIVE_SERVICE, GOOGLE_INST
+
 from export_workers.create_messages import message_for_queue, create_dict_message
 from export_workers.rabbitmq_setup import CHANNEL
-import logging
 
 PATH_TO_EXPORT_FILES = os.environ.get('PATH_TO_EXPORT_FILES') + '/'
-print(123123123123123)
+
 
 def upload_to_google_drive(channel, method, properties, job_data):
-    # pylint: disable=unused-argument
     """
     Uploads files on google drive and sets permissions to users.
     :param channel: RabbitMQ channel
@@ -20,27 +20,28 @@ def upload_to_google_drive(channel, method, properties, job_data):
     :param job_data: dict:
     :return:
     """
-    print(11111)
     try:
         job_data = job_data.decode('utf-8')
         job_data = literal_eval(job_data)
-    except TypeError as error:
-        print(error)
+    except TypeError:
+        logging.error('invalid job data')
         return
     file_name = "{}.{}".format(job_data['file_name'], job_data['export_format'])
     files = os.listdir(PATH_TO_EXPORT_FILES)
     if file_name in files:
         file_path = PATH_TO_EXPORT_FILES + file_name
         file_format = 'text/{}'.format(job_data['export_format'])
-        url_for_downloading, file_id = GOOGLE_INST.upload_file_to_drive(DRIVE_SERVICE, file_name, file_path, file_format)
+        url, file_id = GOOGLE_INST.file_to_drive(DRIVE_SERVICE, file_name, file_path, file_format)
         GOOGLE_INST.insert_permission(DRIVE_SERVICE, file_id, job_data['email'], 'user', 'writer')
-        job_data.update({'url': url_for_downloading})
+        job_data.update({'url': url})
         message_for_queue(job_data, 'send_email')
     else:
         logging.warning("file doesn't exist")
         message = create_dict_message(job_data, 'File is not uploaded!')
         message_for_queue(message, "answer_to_export")
 
+
+print("Google drive worker is working!")
 
 CHANNEL.basic_consume(queue='upload_on_google_drive',
                       on_message_callback=upload_to_google_drive, auto_ack=True)

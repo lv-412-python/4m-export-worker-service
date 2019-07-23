@@ -1,11 +1,12 @@
 """Send email to user"""
+import logging
 import os
 import smtplib
 from email.mime.text import MIMEText
 
-from export_workers.create_messages import message_for_queue, create_dict_message
 from message_templates import EMAIL_TEMPLATE
-import logging
+
+from export_workers.create_messages import message_for_queue, create_dict_message
 
 EMAIL_ADDRESS = os.environ.get('WORKER_EMAIL_ADDRESS')
 EMAIL_PASSWORD = os.environ.get('WORKER_EMAIL_PASSWORD')
@@ -14,6 +15,7 @@ MAIL_SERVER = os.environ.get('MAIL_SERVER')
 MAIL_SERVER_PORT = os.environ.get('MAIL_SERVER_PORT')
 
 class Email:
+    """Email class"""
     def send_message(self, data):
         """
         Send link to download file with answers.
@@ -29,7 +31,7 @@ class Email:
             try:
                 smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
                 smtp.send_message(msg)
-                message = create_dict_message(data, "URL for downloading file successfully shipped!")
+                message = create_dict_message(data, "URL for downloading file successfully shipped")
                 message_for_queue(message, 'answer_to_export')
             except smtplib.SMTPException:
                 logging.error("SMTP server error")
