@@ -5,6 +5,7 @@ from email_message import Email
 from export_workers.rabbitmq_setup import CHANNEL
 from export_workers.create_messages import message_for_queue, create_dict_message
 
+import logging
 
 RABBITMQ_HOST = os.environ.get('RABBITMQ_HOST')
 RABBITMQ_PORT = os.environ.get('RABBITMQ_PORT')
@@ -26,6 +27,7 @@ def job_listener(channel, method, properties, input_data):
         input_dict = literal_eval(input_data)
         EMAIL_SENDER.send_message(input_dict)
     except ValueError:
+        logging.error("invalid input data")
         message = create_dict_message(input_data, "Incorrect input data! Sending failed")
         return message_for_queue(message, 'answer_to_export')
 

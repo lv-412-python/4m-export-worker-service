@@ -1,6 +1,6 @@
 """Get form, groups, fields titles from services"""
 import requests
-
+import logging
 from requests_to_services import SendRequest
 from export_workers.workers.config.base_config import Config
 
@@ -28,17 +28,19 @@ class GetTitles():
         return result_dict
 
     def get_form_title(self, response):
-        # response = SendRequest.request_to_form_service(Config.FORM_SERVICE_URL, job_dict)
-        # response_schema = FormResponseSchema()
-        # response = response_schema.load(data)
-        # print(response)
-        print(response)
-        data = response.json()
-        return data['title']
+        try:
+            data = response.json()
+            title = data['title']
+        except AttributeError:
+            title = 'Title'
+        return title
 
     def get_group_titles(self, response):
-        data = response.json()
-        group_titles = []
-        for group in data:
-            group_titles.append(group['title'])
+        try:
+            data = response.json()
+            group_titles = []
+            for group in data:
+                group_titles.append(group['title'])
+        except AttributeError:
+            group_titles = []
         return group_titles

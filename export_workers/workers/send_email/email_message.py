@@ -5,6 +5,7 @@ from email.mime.text import MIMEText
 
 from export_workers.create_messages import message_for_queue, create_dict_message
 from message_templates import EMAIL_TEMPLATE
+import logging
 
 EMAIL_ADDRESS = os.environ.get('WORKER_EMAIL_ADDRESS')
 EMAIL_PASSWORD = os.environ.get('WORKER_EMAIL_PASSWORD')
@@ -30,7 +31,7 @@ class Email:
                 smtp.send_message(msg)
                 message = create_dict_message(data, "URL for downloading file successfully shipped!")
                 message_for_queue(message, 'answer_to_export')
-            except smtplib.SMTPException as error:
-                print(error)
+            except smtplib.SMTPException:
+                logging.error("SMTP server error")
                 message = create_dict_message(data, "URL for downloading wasn't shipped!")
                 message_for_queue(message, 'answer_to_export')

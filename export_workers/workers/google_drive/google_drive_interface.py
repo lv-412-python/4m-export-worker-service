@@ -8,6 +8,7 @@ import os
 from oauth2client import client
 from oauth2client import tools
 from oauth2client.file import Storage
+import logging
 
 try:
     import argparse
@@ -70,8 +71,8 @@ class GoogleDriveInterface:
         try:
             response = service.permissions().create(
                 fileId=file_id, body=new_permission).execute()
-        except errors.HttpError as error:
-            print('An error occurred: %s' % error)
+        except errors.HttpError:
+            logging.error("permissions wasn't inserted")
         return response
 
     def upload_file_to_drive(self, drive_service, filename, filepath, mimetype):

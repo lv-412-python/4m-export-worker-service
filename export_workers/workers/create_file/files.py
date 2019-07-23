@@ -5,7 +5,7 @@ import random
 
 import xlsxwriter
 from fpdf import FPDF
-
+import logging
 PATH_TO_EXPORT_FILES = os.environ.get('PATH_TO_EXPORT_FILES')
 
 def create_file_name(form_title, groups=None):
@@ -48,7 +48,7 @@ def xls_file(answers, name):
         workbook.close()
         status = True
     except TypeError as error:
-        print(error)
+        logging.error(error)
         status = False
     return status
 
@@ -71,7 +71,7 @@ def csv_file(answers, name):
                 writer.writerow(answers[user])
             status = True
     except TypeError as error:
-        print(error)
+        logging.error(error)
         status = False
     return status
 
@@ -107,6 +107,6 @@ def pdf_file(answers, name):
         pdf.output(file_name)
         status = True
     except TypeError as error:
-        print(error)
+        logging.error(error)
         status = False
     return status

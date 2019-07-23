@@ -1,5 +1,7 @@
 """Send requests to services"""
 import requests
+import urllib.error
+import logging
 
 class SendRequest():
 
@@ -10,15 +12,21 @@ class SendRequest():
         :param input_dict: dict: parameters to query
         :return: answers for form.
         """
-        return requests.get(url, params=job_dict)
+        try:
+            return requests.get(url, params=job_dict)
+        except urllib.error.HTTPError:
+            logging.error("server not responding")
+
 
     def request_to_form_service(self, url, job_dict):
         """
-        Sends request to answers service.
+        Sends request to form service.
         :param url: form service URL
-        :param input_dict: parameters to query
+        :param job_dict: parameters to query
         :return:
         """
-        url = url + '/{}'.format(job_dict['form_id'])
-        return requests.get(url)
-
+        try:
+            url = url + '/{}'.format(job_dict['form_id'])
+            return requests.get(url)
+        except urllib.error.HTTPError:
+            logging.error("server not responding")

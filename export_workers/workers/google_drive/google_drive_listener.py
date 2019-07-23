@@ -5,6 +5,7 @@ from ast import literal_eval
 from create_drive import DRIVE_SERVICE, GOOGLE_INST
 from export_workers.create_messages import message_for_queue, create_dict_message
 from export_workers.rabbitmq_setup import CHANNEL
+import logging
 
 PATH_TO_EXPORT_FILES = os.environ.get('PATH_TO_EXPORT_FILES') + '/'
 print(123123123123123)
@@ -36,6 +37,7 @@ def upload_to_google_drive(channel, method, properties, job_data):
         job_data.update({'url': url_for_downloading})
         message_for_queue(job_data, 'send_email')
     else:
+        logging.warning("file doesn't exist")
         message = create_dict_message(job_data, 'File is not uploaded!')
         message_for_queue(message, "answer_to_export")
 
@@ -43,8 +45,3 @@ def upload_to_google_drive(channel, method, properties, job_data):
 CHANNEL.basic_consume(queue='upload_on_google_drive',
                       on_message_callback=upload_to_google_drive, auto_ack=True)
 CHANNEL.start_consuming()
-
-# import logging
-# logger = logging.getLogger()
-# while True:
-#     logger.error("vse pogano")

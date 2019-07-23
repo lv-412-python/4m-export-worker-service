@@ -14,5 +14,4 @@ export PATH_TO_CREDENTIALS
 python3 ./export_workers/workers/create_file/create_files.py &
 python3 ./export_workers/workers/send_email/email_listener.py &
 python3 ./export_workers/workers/google_drive/google_drive_listener.py &
-# python3 ./export_workers/workers/delete_files.py &
 sleep infinity

@@ -18,12 +18,21 @@ from requests_to_services import SendRequest
 from serializers.job_schema import JobSchema
 from export_workers.workers.config.base_config import Config
 import export_workers.delete_files
+from logging.config import fileConfig
+import logging
+
+fileConfig('logging.config')
+
 
 FILE_MAKERS = {
     'xls': xls_file,
     'csv': csv_file,
     'pdf': pdf_file
 }
+
+GET_TITLE = GetTitles()
+SENDER = SendRequest()
+JOB_SCHEMA = JobSchema()
 
 print(1111111111)
 def get_answers_for_form(answers):
@@ -36,6 +45,8 @@ def get_answers_for_form(answers):
     with field and reply for this field.
     """
     answers_list = answers.json()
+    if answers_list['error']:
+        return {}
     users_answers = {answer['user_id']: {} for answer in answers_list}
     get_titles = GetTitles()
     field_title = get_titles.get_field_title(answers_list)
@@ -59,29 +70,28 @@ def create_file(channel, method, properties, job_data):
     print(job_data)
     job_data = job_data.decode('utf-8')
     job_dict = literal_eval(job_data)
-    job_schema = JobSchema()
-    job_dict = job_schema.load(job_dict)
+    job_dict = JOB_SCHEMA.load(job_dict)
     if job_dict.errors:
         message = create_dict_message(job_dict.data, job_dict.errors)
         message_for_queue(message, 'answer_to_export')
+        logging.warning("invalid input data")
         return
     job_dict = job_dict.data
-    sender = SendRequest()
-    answers = sender.request_to_services(Config.ANSWERS_SERVICE_URL, job_dict)
+    answers = SENDER.request_to_services(Config.ANSWERS_SERVICE_URL, job_dict)
     answers = get_answers_for_form(answers)
     if not answers:
         message = create_dict_message(job_dict, "Answers does not exist")
         message_for_queue(message, "answer_to_export")
+        logging.warning("answers does not exist")
         return
-    get_title = GetTitles()
     if job_dict['groups']:
-        group_response = sender.request_to_services(Config.GROUP_SERVICE_URL, job_dict)
-        groups_title = get_title.get_group_titles(group_response)
+        group_response = SENDER.request_to_services(Config.GROUP_SERVICE_URL, job_dict)
+        groups_title = GET_TITLE.get_group_titles(group_response)
     else:
         groups_title = ''
-    forms_response = sender.request_to_form_service(Config.FORM_SERVICE_URL, job_dict)
+    forms_response = SENDER.request_to_form_service(Config.FORM_SERVICE_URL, job_dict)
     print(type(forms_response))
-    form_title = get_title.get_form_title(forms_response)
+    form_title = GET_TITLE.get_form_title(forms_response)
     file_name = create_file_name(form_title, groups_title)
     export_format = job_dict['export_format']
     status = FILE_MAKERS[export_format](answers, file_name)
@@ -89,6 +99,7 @@ def create_file(channel, method, properties, job_data):
     if not status:
         message = create_dict_message(job_dict, 'Something went wrong! File is not created!')
         message_for_queue(message, "answer_to_export")
+        logging.warning("file wasn't created")
         return
     job_dict.update({'file_name': file_name})
     message_for_queue(job_dict, 'upload_on_google_drive')
