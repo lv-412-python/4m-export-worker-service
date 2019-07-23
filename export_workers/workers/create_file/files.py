@@ -1,5 +1,6 @@
 """Functions to creating csv, pdf, xls files"""
 import csv
+import logging
 import os
 import random
 
@@ -8,7 +9,7 @@ from fpdf import FPDF
 
 PATH_TO_EXPORT_FILES = os.environ.get('PATH_TO_EXPORT_FILES')
 
-def create_file_name(dic):
+def create_file_name(form_title, groups=None):
     """
     Create unique filename.
     :param dic: Dictionary has particular form_id and groups.
@@ -16,7 +17,10 @@ def create_file_name(dic):
     for file.
     :return: str : File name.
     """
-    name = f"Answers_for_form:{dic['form_id']}_groups:{dic['groups']}"
+    if groups:
+        name = "Answers_for_form:{}_groups:{}".format(form_title, groups)
+    else:
+        name = "Answers_for_form:{}".format(form_title)
     return name
 
 
@@ -30,28 +34,22 @@ def xls_file(answers, name):
     file_name = PATH_TO_EXPORT_FILES + '/{0}.xls'.format(name)
     try:
         workbook = xlsxwriter.Workbook(file_name)
-
         worksheet = workbook.add_worksheet()
-
         row = 0
         col = 0
-
         user_id = random.choice(list(answers))
         field_titles = answers[user_id].keys()
-
         for title in field_titles:
             worksheet.write(0, col, title)
             col += 1
-
         for _, user_id in enumerate(answers):
             row += 1
             for col, value in enumerate(answers[user_id]):
                 worksheet.write(row, col, answers[user_id][value])
-
         workbook.close()
         status = True
     except TypeError as error:
-        print(error)
+        logging.error(error)
         status = False
     return status
 
@@ -74,7 +72,7 @@ def csv_file(answers, name):
                 writer.writerow(answers[user])
             status = True
     except TypeError as error:
-        print(error)
+        logging.error(error)
         status = False
     return status
 
@@ -110,6 +108,6 @@ def pdf_file(answers, name):
         pdf.output(file_name)
         status = True
     except TypeError as error:
-        print(error)
+        logging.error(error)
         status = False
     return status
