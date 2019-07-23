@@ -2,7 +2,6 @@
 import requests
 
 from requests_to_services import SendRequest
-from export_workers.workers.create_file.serializers.form_schema import FormResponseSchema
 from export_workers.workers.config.base_config import Config
 
 SENDER = SendRequest()
@@ -28,21 +27,17 @@ class GetTitles():
             result_dict.update({dict_title['id']: dict_title['title']})
         return result_dict
 
-    def get_form_title(self, job_dict):
-        response = SendRequest.request_to_form_service(Config.FORM_SERVICE_URL, job_dict)
-        response_schema = FormResponseSchema()
-        response = response_schema.load(response)
+    def get_form_title(self, response):
+        # response = SendRequest.request_to_form_service(Config.FORM_SERVICE_URL, job_dict)
+        # response_schema = FormResponseSchema()
+        # response = response_schema.load(data)
+        # print(response)
         print(response)
-        if response.errors:
-            result = ""
-        else:
-            result = response.data['title']
-        return result
+        data = response.json()
+        return data['title']
 
-    def get_group_titles(self, data):
-        # response = SendRequest.request_to_services(Config.GROUP_SERVICE_URL, job_dict)
-        # resp_dict = response.json()
-        data = data.json()
+    def get_group_titles(self, response):
+        data = response.json()
         group_titles = []
         for group in data:
             group_titles.append(group['title'])

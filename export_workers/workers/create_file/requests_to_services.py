@@ -20,5 +20,5 @@ class SendRequest():
         :return:
         """
         url = url + '/{}'.format(job_dict['form_id'])
-        print(requests.get(url))
+        return requests.get(url)
 
