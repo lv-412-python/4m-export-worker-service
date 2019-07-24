@@ -18,6 +18,7 @@ class SendRequest():
             return requests.get(url, params=job_dict)
         except urllib.error.HTTPError:
             logging.error("server not responding")
+            return {}
 
 
     def request_to_form_service(self, url, job_dict):
@@ -32,3 +33,4 @@ class SendRequest():
             return requests.get(url)
         except urllib.error.HTTPError:
             logging.error("server not responding")
+            return {}
