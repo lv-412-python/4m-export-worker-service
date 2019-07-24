@@ -44,7 +44,7 @@ def get_answers_for_form(answers):
     with field and reply for this field.
     """
     answers_list = answers.json()
-    if answers_list['error']:
+    if 'error' in answers_list.keys():
         return {}
     users_answers = {answer['user_id']: {} for answer in answers_list}
     get_titles = GetTitles()

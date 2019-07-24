@@ -1,6 +1,5 @@
 """Processes tasks from 'send_email' queue"""
 import logging
-import os
 from ast import literal_eval
 
 from email_message import Email
@@ -8,14 +7,10 @@ from email_message import Email
 from export_workers.create_messages import message_for_queue, create_dict_message
 from export_workers.rabbitmq_setup import CHANNEL
 
-RABBITMQ_HOST = os.environ.get('RABBITMQ_HOST')
-RABBITMQ_PORT = os.environ.get('RABBITMQ_PORT')
-
 EMAIL_SENDER = Email()
 
 
 def job_listener(channel, method, properties, input_data):
-    # pylint: disable=unused-argument
     """
     Callback starts executing when appears task for processing in queue
     :param method: method
