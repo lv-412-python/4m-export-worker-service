@@ -19,7 +19,6 @@ class Email:
     def send_message(self, data):
         """
         Send link to download file with answers.
-        :param url: str:url to downloading file
         :param data: dict: Contains receiver email.
         """
         msg = MIMEText(EMAIL_TEMPLATE.format(url=data['url']), 'html')
