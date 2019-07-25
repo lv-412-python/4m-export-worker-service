@@ -75,6 +75,8 @@ def create_file(channel, method, properties, job_data):
     job_dict = job_dict.data
     answers = SENDER.request_to_services(Config.ANSWERS_SERVICE_URL, job_dict)
     answers = get_answers_for_form(answers)
+    job_dict.pop('from_date', None)
+    job_dict.pop('to_date', None)
     if not answers:
         message = create_dict_message(job_dict, "Answers does not exist")
         message_for_queue(message, "answer_to_export")
