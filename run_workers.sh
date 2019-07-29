@@ -1,8 +1,8 @@
 #!/bin/bash
 set -e
 
-until timeout 1 bash -c "cat < /dev/null > /dev/tcp/${RABBITMQ_HOST}/${RABBITMQ_PORT}"; do
-  >&2 echo "Rabbit MQ not up yet on ${RABBITMQ_HOST}"
+until timeout 1 bash -c "cat < /dev/null > /dev/tcp/rabbitmq/5672"; do
+  >&2 echo "Rabbit MQ not up yet on rabbitmq"
   sleep 10
 done
 
