@@ -3,11 +3,8 @@ import os
 
 import pika
 
-RABBITMQ_HOST = os.environ.get('RABBITMQ_HOST')
-RABBITMQ_PORT = os.environ.get('RABBITMQ_PORT')
-
 CONNECTION = pika.BlockingConnection(
-    pika.ConnectionParameters(host=RABBITMQ_HOST, port=RABBITMQ_PORT))
+    pika.ConnectionParameters(host="rabbitmq", port=5672))
 CHANNEL = CONNECTION.channel()
 
 CHANNEL.queue_declare(queue='export')
