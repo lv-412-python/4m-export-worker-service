@@ -41,8 +41,6 @@ def upload_to_google_drive(channel, method, properties, job_data):
         message_for_queue(message, "answer_to_export")
 
 
-print("Google drive worker is working!")
-
 CHANNEL.basic_consume(queue='upload_on_google_drive',
                       on_message_callback=upload_to_google_drive, auto_ack=True)
 CHANNEL.start_consuming()
