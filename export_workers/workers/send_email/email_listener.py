@@ -27,7 +27,6 @@ def job_listener(channel, method, properties, input_data):
         message = create_dict_message(input_data, "Incorrect input data! Sending failed")
         message_for_queue(message, 'answer_to_export')
 
-print("Email worker is working!")
 
 CHANNEL.basic_consume(queue='send_email', on_message_callback=job_listener, auto_ack=True)
 CHANNEL.start_consuming()
