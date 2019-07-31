@@ -34,7 +34,7 @@ SENDER = SendRequest()
 JOB_SCHEMA = JobSchema()
 
 
-def get_answers_for_form(answers):
+def get_answers_for_form(response):
     """
     Gets users responses from the database
     :param answers: answers
@@ -43,9 +43,7 @@ def get_answers_for_form(answers):
     Keys are user, values are dictionaries
     with field and reply for this field.
     """
-    answers_list = answers.json()
-    if 'error' in answers_list[0]:
-        return {}
+    answers_list = response.json()
     users_answers = {answer['user_id']: {} for answer in answers_list}
     get_titles = GetTitles()
     field_title = get_titles.get_field_title(answers_list)
@@ -73,15 +71,15 @@ def create_file(channel, method, properties, job_data):
         logging.warning("invalid input data")
         return
     job_dict = job_dict.data
-    answers = SENDER.request_to_services(Config.ANSWERS_SERVICE_URL, job_dict)
-    answers = get_answers_for_form(answers)
+    response = SENDER.request_to_services(Config.ANSWERS_SERVICE_URL, job_dict)
     job_dict.pop('from_date', None)
     job_dict.pop('to_date', None)
-    if not answers:
+    if response.status_code == 404:
         message = create_dict_message(job_dict, "Answers does not exist")
         message_for_queue(message, "answer_to_export")
         logging.warning("answers does not exist")
         return
+    answers = get_answers_for_form(response)
     if job_dict['groups']:
         group_response = SENDER.request_to_services(Config.GROUP_SERVICE_URL, job_dict)
         groups_title = GET_TITLE.get_group_titles(group_response)
@@ -100,7 +98,6 @@ def create_file(channel, method, properties, job_data):
     job_dict.update({'file_name': file_name})
     message_for_queue(job_dict, 'upload_on_google_drive')
 
-print("create_file worker is running!")
 
 CHANNEL.basic_consume(queue='export', on_message_callback=create_file, auto_ack=True)
 CHANNEL.start_consuming()
