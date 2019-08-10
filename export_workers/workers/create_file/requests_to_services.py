@@ -16,7 +16,7 @@ class SendRequest():
         """
         try:
             return requests.get(url, params=job_dict)
-        except urllib.error.HTTPError:
+        except requests.exceptions.RequestException:
             logging.error("server not responding")
             return {}
 
@@ -31,6 +31,6 @@ class SendRequest():
         try:
             url = url + '/{}'.format(job_dict['form_id'])
             return requests.get(url)
-        except urllib.error.HTTPError:
+        except requests.exceptions.RequestException:
             logging.error("server not responding")
             return {}
