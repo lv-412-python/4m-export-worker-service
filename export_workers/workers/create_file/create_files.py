@@ -80,7 +80,7 @@ def create_file(channel, method, properties, job_data):
         logging.warning("answers does not exist")
         return
     answers = get_answers_for_form(response)
-    if job_dict['groups']:
+    if job_dict['group_id']:
         group_response = SENDER.request_to_services(Config.GROUP_SERVICE_URL, job_dict)
         groups_title = GET_TITLE.get_group_titles(group_response)
     else:
@@ -93,7 +93,7 @@ def create_file(channel, method, properties, job_data):
     if not status:
         message = create_dict_message(job_dict, 'Something went wrong! File is not created!')
         message_for_queue(message, "answer_to_export")
-        logging.warning("file wasn't created")
+        logging.warning("file didn't created")
         return
     job_dict.update({'file_name': file_name})
     message_for_queue(job_dict, 'upload_on_google_drive')

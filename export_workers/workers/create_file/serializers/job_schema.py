@@ -6,7 +6,7 @@ class JobSchema(Schema):
     """Schema for job dict."""
     task_id = fields.Integer(required=True)
     form_id = fields.Integer(required=True)
-    groups = fields.List(fields.Integer(), required=True)
+    group_id = fields.List(fields.Integer(), required=True)
     export_format = fields.String(required=True)
     email = fields.Email(required=True)
     from_date = fields.Date()
