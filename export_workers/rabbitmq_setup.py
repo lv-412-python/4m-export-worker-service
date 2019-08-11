@@ -1,6 +1,4 @@
 """Creates RabbitMQ channel, and queues."""
-import os
-
 import pika
 
 CONNECTION = pika.BlockingConnection(

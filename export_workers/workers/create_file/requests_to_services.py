@@ -1,6 +1,5 @@
 """Send requests to services"""
 import logging
-import urllib.error
 
 import requests
 
