@@ -17,7 +17,7 @@ def upload_to_google_drive(channel, method, properties, job_data):
     :param channel: RabbitMQ channel
     :param method: RabbitMQ method
     :param properties: RabbitMq properties
-    :param job_data: dict:
+    :param job_data: str: Dictionary with keys (form_id, groups, format) converted to string
     :return:
     """
     try:

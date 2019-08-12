@@ -2,6 +2,8 @@
 import logging
 
 import requests
+from export_workers.create_messages import (create_dict_message,
+                                            message_for_queue)
 
 
 class SendRequest():
@@ -17,8 +19,9 @@ class SendRequest():
             return requests.get(url, params=job_dict)
         except requests.exceptions.RequestException:
             logging.error("server not responding")
-            return {}
-
+            message = create_dict_message(job_dict, 'server not responding')
+            message_for_queue(message, "answer_to_export")
+            return False
 
     def request_to_form_service(self, url, job_dict):
         """
@@ -32,4 +35,3 @@ class SendRequest():
             return requests.get(url)
         except requests.exceptions.RequestException:
             logging.error("server not responding")
-            return {}

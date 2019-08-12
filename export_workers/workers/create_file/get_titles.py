@@ -20,8 +20,12 @@ class GetTitles():
         # request titles based on needed fields_id
         fields_params = {'field_id': list(fields_id)}
         fields_request = SENDER.request_to_services(Config.FIELD_SERVICE_URL, fields_params)
-        r_dict = fields_request.json()
         result_dict = {}
+        if not fields_request:
+            for field_id in fields_id:
+                result_dict.update({field_id: "Title"})
+            return result_dict
+        r_dict = fields_request.json()
         for dict_title in r_dict:
             result_dict.update({dict_title['id']: dict_title['title']})
         return result_dict
