@@ -1,6 +1,4 @@
 """Create drive_service for connection to google drive."""
-from __future__ import print_function
-
 import httplib2
 from apiclient import discovery
 from google_drive_interface import GoogleDriveInterface

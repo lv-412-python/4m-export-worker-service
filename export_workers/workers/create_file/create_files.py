@@ -37,7 +37,7 @@ JOB_SCHEMA = JobSchema()
 def get_answers_for_form(response):
     """
     Gets users responses from the database
-    :param answers: answers
+    :param response: response from answers service
     returns answers for entire form.
     :return: dictionary : Returns dictionary.
     Keys are user, values are dictionaries
@@ -45,8 +45,7 @@ def get_answers_for_form(response):
     """
     answers_list = response.json()
     users_answers = {answer['user_id']: {} for answer in answers_list}
-    get_titles = GetTitles()
-    field_title = get_titles.get_field_title(answers_list)
+    field_title = GET_TITLE.get_field_title(answers_list)
     for answer in answers_list:
         title = field_title[answer['field_id']]
         users_answers[answer['user_id']][title] = answer['reply']
@@ -74,6 +73,8 @@ def create_file(channel, method, properties, job_data):
     response = SENDER.request_to_services(Config.ANSWERS_SERVICE_URL, job_dict)
     job_dict.pop('from_date', None)
     job_dict.pop('to_date', None)
+    if not response:
+        return
     if response.status_code == 404:
         message = create_dict_message(job_dict, "Answers does not exist")
         message_for_queue(message, "answer_to_export")

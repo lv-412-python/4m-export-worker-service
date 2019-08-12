@@ -17,7 +17,7 @@ def upload_to_google_drive(channel, method, properties, job_data):
     :param channel: RabbitMQ channel
     :param method: RabbitMQ method
     :param properties: RabbitMq properties
-    :param job_data: dict:
+    :param job_data: str: Dictionary with keys (form_id, groups, format) converted to string
     :return:
     """
     try:
@@ -25,6 +25,8 @@ def upload_to_google_drive(channel, method, properties, job_data):
         job_data = literal_eval(job_data)
     except TypeError:
         logging.error('invalid job data')
+        message = create_dict_message(job_data, "Invalid job_data")
+        message_for_queue(message, "answer_to_export")
         return
     file_name = "{}.{}".format(job_data['file_name'], job_data['export_format'])
     files = os.listdir(PATH_TO_EXPORT_FILES)

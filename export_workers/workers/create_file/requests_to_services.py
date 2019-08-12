@@ -1,8 +1,9 @@
 """Send requests to services"""
 import logging
-import urllib.error
 
 import requests
+from export_workers.create_messages import (create_dict_message,
+                                            message_for_queue)
 
 
 class SendRequest():
@@ -16,10 +17,11 @@ class SendRequest():
         """
         try:
             return requests.get(url, params=job_dict)
-        except urllib.error.HTTPError:
+        except requests.exceptions.RequestException:
             logging.error("server not responding")
-            return {}
-
+            message = create_dict_message(job_dict, 'server not responding')
+            message_for_queue(message, "answer_to_export")
+            return False
 
     def request_to_form_service(self, url, job_dict):
         """
@@ -31,6 +33,5 @@ class SendRequest():
         try:
             url = url + '/{}'.format(job_dict['form_id'])
             return requests.get(url)
-        except urllib.error.HTTPError:
+        except requests.exceptions.RequestException:
             logging.error("server not responding")
-            return {}
