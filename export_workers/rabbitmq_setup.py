@@ -2,7 +2,7 @@
 import pika
 
 CONNECTION = pika.BlockingConnection(
-    pika.ConnectionParameters(host="rabbitmq", port=5672))
+    pika.ConnectionParameters(host="rabbitmq", port=5672, heartbeat=0))
 CHANNEL = CONNECTION.channel()
 
 CHANNEL.queue_declare(queue='export')
