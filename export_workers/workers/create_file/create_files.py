@@ -71,6 +71,7 @@ def create_file(channel, method, properties, job_data):
         logging.warning("invalid input data")
         return
     job_dict = job_dict.data
+    logging.warning(job_dict)
     response = SENDER.request_to_services(Config.ANSWERS_SERVICE_URL, job_dict)
     if not response:
         return

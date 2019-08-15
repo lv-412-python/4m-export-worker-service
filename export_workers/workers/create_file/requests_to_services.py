@@ -17,7 +17,7 @@ class SendRequest():
         """
         try:
             return requests.get(url, params=job_dict,
-                                cookies={'session' :job_dict['session'],
+                                cookies={'session': job_dict['session'],
                                          'admin': job_dict['admin']})
         except requests.exceptions.RequestException:
             logging.error("server not responding")
