@@ -1,6 +1,4 @@
 """Functions to create messages"""
-# import json
-
 from export_workers.rabbitmq_setup import CHANNEL
 
 
