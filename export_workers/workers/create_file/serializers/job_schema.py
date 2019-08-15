@@ -11,6 +11,8 @@ class JobSchema(Schema):
     email = fields.Email(required=True)
     from_date = fields.Date()
     to_date = fields.Date()
+    admin = fields.String(required=True)
+    session = fields.String(required=True)
 
 
     @validates('export_format')

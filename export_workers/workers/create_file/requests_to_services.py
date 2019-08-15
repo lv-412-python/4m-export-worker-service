@@ -16,7 +16,9 @@ class SendRequest():
         :return: answers for form.
         """
         try:
-            return requests.get(url, params=job_dict)
+            return requests.get(url, params=job_dict,
+                                cookies={'session' :job_dict['session'],
+                                         'admin': job_dict['admin']})
         except requests.exceptions.RequestException:
             logging.error("server not responding")
             message = create_dict_message(job_dict, 'server not responding')
@@ -32,6 +34,7 @@ class SendRequest():
         """
         try:
             url = url + '/{}'.format(job_dict['form_id'])
-            return requests.get(url)
+            return requests.get(url, cookies={'session' :job_dict['session'],
+                                              'admin': job_dict['admin']})
         except requests.exceptions.RequestException:
             logging.error("server not responding")
