@@ -1,5 +1,5 @@
 """Functions to create messages"""
-import json
+# import json
 
 from export_workers.rabbitmq_setup import CHANNEL
 
@@ -25,4 +25,4 @@ def message_for_queue(message, queue):
     :param queue: Name of the queue.
     :return: None
     """
-    CHANNEL.basic_publish(exchange='', routing_key=queue, body=json.dumps(message))
+    CHANNEL.basic_publish(exchange='', routing_key=queue, body=str(message))

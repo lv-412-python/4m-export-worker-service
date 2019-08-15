@@ -72,8 +72,8 @@ def create_file(channel, method, properties, job_data):
         return
     job_dict = job_dict.data
     response = SENDER.request_to_services(Config.ANSWERS_SERVICE_URL, job_dict)
-    job_dict.pop('from_date', None)
-    job_dict.pop('to_date', None)
+    # job_dict.pop('from_date', None)
+    # job_dict.pop('to_date', None)
     if not response:
         return
     answers = get_answers_for_form(response)
