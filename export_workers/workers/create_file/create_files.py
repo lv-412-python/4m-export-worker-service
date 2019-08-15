@@ -19,7 +19,8 @@ from export_workers.create_messages import (
 )
 from export_workers.rabbitmq_setup import CHANNEL
 from export_workers.workers.config.base_config import Config
-# import export_workers.delete_files
+# pylint: disable=unused-import
+import export_workers.delete_files
 
 fileConfig('logging.config')
 
@@ -71,14 +72,9 @@ def create_file(channel, method, properties, job_data):
         return
     job_dict = job_dict.data
     response = SENDER.request_to_services(Config.ANSWERS_SERVICE_URL, job_dict)
-    job_dict.pop('from_date', None)
-    job_dict.pop('to_date', None)
+    # job_dict.pop('from_date', None)
+    # job_dict.pop('to_date', None)
     if not response:
-        return
-    if response.status_code == 404:
-        message = create_dict_message(job_dict, "Answers does not exist")
-        message_for_queue(message, "answer_to_export")
-        logging.warning("answers does not exist")
         return
     answers = get_answers_for_form(response)
     if job_dict['group_id']:
