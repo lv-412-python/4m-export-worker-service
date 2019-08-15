@@ -7,7 +7,7 @@ SENDER = SendRequest()
 
 class GetTitles():
     """Class that get titles by ID"""
-    def get_field_title(self, result):
+    def get_field_title(self, result, job_dict):
         """changes field_id to field_title
         :param result: list: result of sqlalchemy query
         :return r_dict: dict: key - field_id, value - field_title
@@ -19,7 +19,7 @@ class GetTitles():
             fields_id.add(int(field))
         # request titles based on needed fields_id
         fields_params = {'field_id': list(fields_id)}
-        fields_request = SENDER.request_to_services(Config.FIELD_SERVICE_URL, fields_params)
+        fields_request = SENDER.request_to_fields_service(Config.FIELD_SERVICE_URL, fields_params, job_dict)
         result_dict = {}
         if not fields_request:
             for field_id in fields_id:

@@ -35,7 +35,7 @@ SENDER = SendRequest()
 JOB_SCHEMA = JobSchema()
 
 
-def get_answers_for_form(response):
+def get_answers_for_form(response, job_dict):
     """
     Gets users responses from the database
     :param response: response from answers service
@@ -46,7 +46,7 @@ def get_answers_for_form(response):
     """
     answers_list = response.json()
     users_answers = {answer['user_id']: {} for answer in answers_list}
-    field_title = GET_TITLE.get_field_title(answers_list)
+    field_title = GET_TITLE.get_field_title(answers_list, job_dict)
     for answer in answers_list:
         title = field_title[answer['field_id']]
         users_answers[answer['user_id']][title] = answer['reply']
@@ -71,12 +71,10 @@ def create_file(channel, method, properties, job_data):
         logging.warning("invalid input data")
         return
     job_dict = job_dict.data
-    response = SENDER.request_to_services(Config.ANSWERS_SERVICE_URL, job_dict)
-    job_dict.pop('from_date', None)
-    job_dict.pop('to_date', None)
+    response = SENDER.request_to_answer_service(Config.ANSWERS_SERVICE_URL, job_dict)
     if not response:
         return
-    answers = get_answers_for_form(response)
+    answers = get_answers_for_form(response, job_dict)
     if job_dict['group_id']:
         group_response = SENDER.request_to_services(Config.GROUP_SERVICE_URL, job_dict)
         groups_title = GET_TITLE.get_group_titles(group_response)
